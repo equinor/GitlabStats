@@ -1,0 +1,7 @@
+secrets.env
+venv/
+statoil-certs/
+.idea/
+data/
+influxdb-dump
+/.venv/

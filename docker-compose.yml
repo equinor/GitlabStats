@@ -1,0 +1,32 @@
+version: "3.4"
+services:
+
+  git_stats:
+    image: gitlab_stats
+    container_name: gitstats
+    env_file: secrets.env
+    environment:
+      - GRAFANA_FREQ=900
+      - GIT_URL=https://git.statoil.no
+      - INFLUXDB_HOSTNAME=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_ADMIN_USER=root
+      - INFLUXDB_DB=gitstats
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:1.4-alpine
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb
+    env_file: secrets.env
+    environment:
+      - INFLUXDB_HOSTNAME=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_ADMIN_USER=root
+      - INFLUXDB_DB=gitstats
+    restart: unless-stopped

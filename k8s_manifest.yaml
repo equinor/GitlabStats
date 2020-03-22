@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+      - env:
+        - name: INFLUXDB_ADMIN_PASSWORD
+          value: CHANGE ME
+        - name: INFLUXDB_ADMIN_USER
+          value: root
+        - name: INFLUXDB_DB
+          value: gitstats
+        - name: INFLUXDB_HOSTNAME
+          value: influxdb
+        - name: INFLUXDB_PORT
+          value: "8086"
+        image: influxdb:1.4-alpine
+        name: influxdb
+        ports:
+        - name: influx-api
+          containerPort: 8086
+        volumeMounts:
+        - mountPath: /var/lib/influxdb
+          name: db-volume
+      volumes:
+      - name: db-volume
+        hostPath:
+          path: /data/k8s/gitlab_stats/data
+          type: Directory
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-stats
+  labels:
+    app: git-stats
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: git-stats
+  template:
+    metadata:
+      labels:
+        app: git-stats
+    spec:
+      containers:
+      - name: gitstats
+        image: git.statoil.no:4567/sdp/gitlab_stats:latest
+        imagePullPolicy: Always
+        env:
+        - name: GIT_PRIVATE_TOKEN
+          value: CHANGE ME
+        - name: GIT_URL
+          value: https://git.statoil.no
+        - name: GRAFANA_FREQ
+          value: "200"
+        - name: INFLUXDB_ADMIN_PASSWORD
+          value: rootpasswd
+        - name: INFLUXDB_ADMIN_USER
+          value: root
+        - name: INFLUXDB_DB
+          value: gitstats
+        - name: INFLUXDB_HOSTNAME
+          value: influxdb
+        - name: INFLUXDB_PORT
+          value: "8086"
+      imagePullSecrets:
+      - name: gitlabregsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+spec:
+  selector:
+    app: influxdb
+  ports:
+  - port: 8086
+    targetPort: influx-api
+  externalIPs:
+  - 10.36.32.166
