@@ -139,6 +139,6 @@ class Metrics:
         return f"gitlabstats_{name} {value} {timestamp}\n"
 
     def to_prometheus(self):
-        now = time.time() * 1000
+        now = str(time.time() * 1000).split(".", 1)[0]
         return f"{self.log_format('projects', self.total_projects(), now)}" \
                f"{self.log_format('total_users', self.total_users(), now)}"
