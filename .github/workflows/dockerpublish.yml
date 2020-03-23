@@ -15,6 +15,7 @@ on:
 
 env:
   IMAGE_NAME: gitlabstats
+  DOCKERHUB_USER: stigofstad
 
 jobs:
   # Run tests.
@@ -50,11 +51,11 @@ jobs:
         run: docker build . --file Dockerfile --tag image
 
       - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKERHUB_USER --password-stdin
 
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/equinor/gitlabstats/$IMAGE_NAME
+          IMAGE_ID=sdpequinor/$IMAGE_NAME
 
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
