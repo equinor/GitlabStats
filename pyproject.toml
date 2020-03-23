@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "gitlab_stats"
+name = "GitlabStats"
 version = "0.1.0"
 description = "Scrape statistics from the Gitlab API"
 authors = ["Stig Ofstad <stigofstad@gmail.com>"]
@@ -9,6 +9,7 @@ python = "^3.8"
 influxdb = "^5.2.3"
 flask = "^1.1.1"
 python-gitlab = "^2.1.2"
+prometheus_client = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 
