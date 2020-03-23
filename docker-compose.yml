@@ -2,10 +2,12 @@ version: "3.4"
 services:
 
   git_stats:
-    image: gitlab_stats
+    build: ./
     container_name: gitstats
     env_file: secrets.env
     environment:
       - GRAFANA_FREQ=900
-      - GIT_URL=https://git.statoil.no
+      - GIT_URL=https://git.equinor.com
     restart: unless-stopped
+    ports:
+    - 80:5000

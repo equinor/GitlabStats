@@ -6,5 +6,5 @@ RUN pip install --upgrade pip && \
     poetry config virtualenvs.create false
 COPY pyproject.toml poetry.lock ./
 RUN poetry install
-ADD app.py /
-ENTRYPOINT ["python3", "./gitlab_stats.py"]
+COPY . .
+ENTRYPOINT ["python", "./app.py"]
