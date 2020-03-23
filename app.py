@@ -14,7 +14,7 @@ metrics = manager.list()
 @app.route("/metrics", methods=["GET"])
 def metrics_endpoint():
     if metrics:
-        return jsonify(metrics[-1].to_prometheus())
+        return metrics[-1].to_prometheus()
     else:
         return "GitlabStats has not yet finished collecting statistics..."
 

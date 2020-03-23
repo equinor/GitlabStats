@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
 import time
+from datetime import datetime, timedelta
+
 import gitlab
 import requests
 
@@ -25,7 +26,6 @@ class Metrics:
                                 session=requests.Session())
         self.projects = self.gl.projects.list(as_list=False)
         self.users = self.gl.users.list(as_list=False)
-
 
     def total_projects(self):
         return self.projects.total
@@ -134,9 +134,11 @@ class Metrics:
     #         inactive_users {self.inactive_users} {now}
     #     """
 
+    @staticmethod
+    def log_format(name, value, timestamp):
+        return f"gitlabstats_{name} {value} {timestamp}\n"
+
     def to_prometheus(self):
         now = time.time() * 1000
-        return f"""
-    projects {self.total_projects()} {now}
-    git_users {self.total_users()} {now}
-        """
+        return f"{self.log_format('projects', self.total_projects(), now)}" \
+               f"{self.log_format('total_users', self.total_users(), now)}"
