@@ -8,24 +8,18 @@ from config import Config
 
 
 class Metrics:
-    # def __init__(self):
-    #     self.gl = gitlab.Gitlab(Config.git_url, private_token=Config.git_token, api_version='4',
-    #                             session=requests.Session())
-    #     self.projects = self.gl.projects.list(as_list=False)
-    #     self.inactive_projects = self.get_inactive_projects()
-    #     self.open_issues = self.get_issues()
-    #     self.groups = self.gl.groups.list(as_list=False)
-    #     self.users = self.gl.users.list(as_list=False)
-    #     self.inactive_users = None
-    #     self.total_branches = self.get_branches()
-    #     self.commits_last_day = self.get_commits_last_day()
-    #     self.commits_last_week = self.get_commits_last_week()
-
     def __init__(self):
         self.gl = gitlab.Gitlab(Config.git_url, private_token=Config.git_token, api_version='4',
                                 session=requests.Session())
         self.projects = self.gl.projects.list(as_list=False)
+        self.inactive_projects = self.get_inactive_projects()
+        self.open_issues = self.get_issues()
+        self.groups = self.gl.groups.list(as_list=False)
         self.users = self.gl.users.list(as_list=False)
+        self.inactive_users = None
+        self.total_branches = self.get_branches()
+        self.commits_last_day = self.get_commits_last_day()
+        self.commits_last_week = self.get_commits_last_week()
 
     def total_projects(self):
         return self.projects.total
@@ -120,20 +114,6 @@ class Metrics:
         active_users = self.gl.user_activities.list(all=True, as_list=False)
         self.inactive_users = self.users.total - len(active_users)
 
-    # def to_prometheus(self):
-    #     now = datetime.now()
-    #     return f"""
-    #         branches  {self.total_branches} {now}
-    #         projects {self.total_projects()} {now}
-    #         git_users {self.total_users()} {now}
-    #         git_groups {self.total_groups()} {now}
-    #         issues {self.open_issues} {now}
-    #         commits_last_day {self.commits_last_day} {now}
-    #         commits_last_week {self.commits_last_week} {now}
-    #         inactive_projects {self.inactive_projects} {now}
-    #         inactive_users {self.inactive_users} {now}
-    #     """
-
     @staticmethod
     def log_format(name, value, timestamp):
         return f"gitlabstats_{name} {value} {timestamp}\n"
@@ -141,4 +121,11 @@ class Metrics:
     def to_prometheus(self):
         now = str(time.time() * 1000).split(".", 1)[0]
         return f"{self.log_format('projects', self.total_projects(), now)}" \
-               f"{self.log_format('total_users', self.total_users(), now)}"
+               f"{self.log_format('branches', self.total_branches, now)}" \
+               f"{self.log_format('users', self.total_users(), now)}" \
+               f"{self.log_format('groups', self.total_groups(), now)}" \
+               f"{self.log_format('open_issues', self.open_issues, now)}" \
+               f"{self.log_format('commits_last_day', self.commits_last_day, now)}" \
+               f"{self.log_format('commits_last_week', self.commits_last_week, now)}" \
+               f"{self.log_format('inactive_projects', self.inactive_projects, now)}" \
+               f"{self.log_format('inactive_users', self.inactive_users, now)}"
