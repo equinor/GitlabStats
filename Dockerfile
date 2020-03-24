@@ -8,4 +8,4 @@ RUN pip install --upgrade pip && \
 COPY pyproject.toml poetry.lock ./
 RUN poetry install
 COPY . .
-ENTRYPOINT ["flask", "run"]
+ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
