@@ -8,6 +8,8 @@ services:
     environment:
       - GRAFANA_FREQ=900
       - GIT_URL=https://git.equinor.com
+      - FLASK_DEBUG=1
+      - FLASK_APP=app.py
     restart: unless-stopped
     ports:
     - 80:5000

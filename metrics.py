@@ -77,7 +77,7 @@ class Metrics:
 
     def get_commits_last_day(self):
         now = datetime.utcnow()
-        since = now - timedelta(hours=6)
+        since = now - timedelta(hours=24)
         since = since.replace(microsecond=0).isoformat()
         since = str(since) + "Z"
 

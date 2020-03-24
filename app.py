@@ -19,19 +19,18 @@ def metrics_endpoint():
         return "GitlabStats has not yet finished collecting statistics..."
 
 
-def update_metrics():
-    while True:
-        print("Fetching stats...")
-        temp = Metrics()
-        if len(metrics) > 0:
-            metrics.pop(0)
-        metrics.append(temp)
-        print("Done!")
-        print(f"Sleeping for {Config.update_freq} seconds...")
-        sleep(Config.update_freq)
+@app.before_first_request
+def background_job():
+    def update_metrics():
+        while True:
+            print("Fetching stats...")
+            temp = Metrics()
+            if len(metrics) > 0:
+                metrics.pop(0)
+            metrics.append(temp)
+            print("Done!")
+            print(f"Sleeping for {Config.update_freq} seconds...")
+            sleep(Config.update_freq)
 
-
-if __name__ == '__main__':
     update_process = Process(target=update_metrics)
     update_process.start()
-    app.run(host="0.0.0.0", port=5000, debug=1)
